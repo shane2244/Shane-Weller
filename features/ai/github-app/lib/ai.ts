@@ -21,12 +21,14 @@ export async function callOpenAI(messages: ChatMessage[]) {
     }),
   });
 
+  const text = await res.text();
   if (!res.ok) {
-    const text = await res.text();
+    // include body for easier debugging
     throw new Error(`OpenAI error: ${res.status} ${text}`);
   }
 
-  const data = await res.json();
-  const reply = data.choices?.[0]?.message?.content;
-  return reply;
+  const data = JSON.parse(text);
+  const reply = data.choices?.[0]?.message?.content || '';
+  const usage = data.usage || null;
+  return { reply, usage, raw: data };
 }

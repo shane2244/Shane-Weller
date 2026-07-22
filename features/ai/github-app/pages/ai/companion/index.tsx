@@ -1,5 +1,7 @@
+// add "Save to Journal" action for assistant messages
 import { useEffect, useState } from 'react';
 import Nav from '../../../components/Nav';
+import '../../styles/globals.css';
 
 type ConvSummary = { id: string; title: string | null; updatedAt: string; lastMessage?: { role: string; content: string; createdAt: string } };
 
@@ -61,6 +63,23 @@ export default function CompanionPage() {
     }
   }
 
+  async function saveToJournal(content: string) {
+    try {
+      const res = await fetch('/features/ai/github-app/api/journal', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'Saved from AI Companion', content }),
+      });
+      if (res.ok) {
+        alert('Saved to journal');
+      } else {
+        const err = await res.json(); alert(err?.error || 'Save failed');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Save failed');
+    }
+  }
+
   return (
     <main style={{ padding: 24, display: 'flex', gap: 24 }}>
       <Nav />
@@ -88,6 +107,11 @@ export default function CompanionPage() {
               <div style={{ fontSize: 12, color: '#999' }}>{m.role}</div>
               <div style={{ whiteSpace: 'pre-wrap' }}>{m.content}</div>
               <small style={{ color: '#777' }}>{new Date(m.createdAt).toLocaleString()}</small>
+              {m.role === 'assistant' && (
+                <div>
+                  <button onClick={() => saveToJournal(m.content)} style={{ marginTop: 8 }} className="button secondary">Save to Journal</button>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -95,8 +119,8 @@ export default function CompanionPage() {
         <form onSubmit={send} style={{ marginTop: 12 }}>
           <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} style={{ width: '100%' }} />
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-            <button type="submit" disabled={sending}>{sending ? 'Sending…' : 'Send'}</button>
-            <button type="button" onClick={() => { setText(''); }}>Clear</button>
+            <button type="submit" disabled={sending} className="button">{sending ? 'Sending…' : 'Send'}</button>
+            <button type="button" onClick={() => { setText(''); }} className="button secondary">Clear</button>
           </div>
         </form>
       </section>
