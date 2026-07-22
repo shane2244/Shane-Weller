@@ -1,8 +1,11 @@
 import NextAuth from 'next-auth';
 import GitHubProvider from 'next-auth/providers/github';
 import EmailProvider from 'next-auth/providers/email';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { prisma } from '../../../lib/prisma';
 
-export default NextAuth({
+export const authOptions = {
+  adapter: PrismaAdapter(prisma as any),
   providers: [
     // GitHub OAuth (optional)
     GitHubProvider({
@@ -24,4 +27,6 @@ export default NextAuth({
       return session;
     },
   },
-});
+};
+
+export default NextAuth(authOptions as any);

@@ -2,17 +2,24 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../lib/prisma';
 import { callOpenAI } from '../../lib/ai';
 import { systemPrompt } from '../../lib/prompts';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../auth/[...nextauth]';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { conversationId, userMessage, userId } = req.body;
+  const session = await getServerSession(req, res, authOptions as any);
+  if (!session || !session.user) return res.status(401).json({ error: 'Unauthorized' });
+
+  const { conversationId, userMessage } = req.body;
   if (!userMessage) return res.status(400).json({ error: 'userMessage required' });
 
   try {
+    const userId = (session.user as any).id;
+
     // Load recent messages if conversationId provided
     let messages = [
-      { role: 'system', content: systemPrompt() },
+      { role: 'system', content: systemPrompt(session.user?.name || undefined) },
       { role: 'user', content: userMessage },
     ];
 
@@ -23,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
       if (convo) {
         messages = [
-          { role: 'system', content: systemPrompt() },
+          { role: 'system', content: systemPrompt(session.user?.name || undefined) },
           ...convo.messages.map((m) => ({ role: m.role as any, content: m.content })),
           { role: 'user', content: userMessage },
         ];
@@ -36,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let convoId = conversationId;
     if (!convoId) {
       const convo = await prisma.conversation.create({
-        data: { userId: userId || 'unknown', title: null },
+        data: { userId: userId, title: null },
       });
       convoId = convo.id;
     }
