@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import Nav from '../../components/Nav';
+import '../../styles/globals.css';
 
 export default function JournalPage() {
   const [journals, setJournals] = useState<any[]>([]);
@@ -27,26 +29,36 @@ export default function JournalPage() {
   }
 
   return (
-    <main style={{ padding: 24 }}>
-      <h1>Journal</h1>
-      <form onSubmit={create} style={{ marginBottom: 24 }}>
-        <input placeholder="Title (optional)" value={title} onChange={(e) => setTitle(e.target.value)} style={{ display: 'block', width: '100%', marginBottom: 8 }} />
-        <textarea placeholder="Write your entry..." value={content} onChange={(e) => setContent(e.target.value)} rows={6} style={{ width: '100%' }} />
-        <button type="submit" style={{ marginTop: 8 }}>Save</button>
-      </form>
+    <main className="container">
+      <Nav />
 
-      <section>
-        <h2>Recent entries</h2>
-        {journals.length === 0 && <p>No entries yet.</p>}
-        <ul>
-          {journals.map((j) => (
-            <li key={j.id} style={{ marginBottom: 12 }}>
-              <strong>{j.title || 'Untitled'}</strong>
-              <div style={{ whiteSpace: 'pre-wrap' }}>{j.content}</div>
-              <small>{new Date(j.createdAt).toLocaleString()}</small>
-            </li>
-          ))}
-        </ul>
+      <section style={{ marginTop: 20 }}>
+        <div className="glass-panel">
+          <h1 className="header-title">Journal</h1>
+          <p className="header-sub">Capture your thoughts — private and secure.</p>
+
+          <form onSubmit={create} style={{ marginBottom: 24 }}>
+            <input placeholder="Title (optional)" value={title} onChange={(e) => setTitle(e.target.value)} style={{ display: 'block', width: '100%', marginBottom: 8 }} />
+            <textarea placeholder="Write your entry..." value={content} onChange={(e) => setContent(e.target.value)} rows={6} style={{ width: '100%' }} />
+            <div style={{ marginTop: 8 }}>
+              <button className="button" type="submit">Save</button>
+            </div>
+          </form>
+
+          <section>
+            <h2 className="header-title">Recent entries</h2>
+            {journals.length === 0 && <p>No entries yet.</p>}
+            <ul>
+              {journals.map((j) => (
+                <li key={j.id} style={{ marginBottom: 12 }}>
+                  <strong>{j.title || 'Untitled'}</strong>
+                  <div style={{ whiteSpace: 'pre-wrap' }}>{j.content}</div>
+                  <small className="muted">{new Date(j.createdAt).toLocaleString()}</small>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </section>
     </main>
   );

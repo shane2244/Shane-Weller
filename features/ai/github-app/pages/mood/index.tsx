@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import Nav from '../../components/Nav';
+import '../../styles/globals.css';
 
 export default function MoodPage() {
   const [moods, setMoods] = useState<any[]>([]);
@@ -28,29 +30,39 @@ export default function MoodPage() {
   }
 
   return (
-    <main style={{ padding: 24 }}>
-      <h1>Mood Tracker</h1>
-      <form onSubmit={create} style={{ marginBottom: 24 }}>
-        <input placeholder="Mood (e.g. happy, sad)" value={mood} onChange={(e) => setMood(e.target.value)} style={{ display: 'block', width: '100%', marginBottom: 8 }} />
-        <label>
-          Energy: <input type="range" min={0} max={10} value={energy} onChange={(e) => setEnergy(Number(e.target.value))} /> {energy}
-        </label>
-        <textarea placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} rows={3} style={{ width: '100%', marginTop: 8 }} />
-        <button type="submit" style={{ marginTop: 8 }}>Record Mood</button>
-      </form>
+    <main className="container">
+      <Nav />
 
-      <section>
-        <h2>Recent moods</h2>
-        {moods.length === 0 && <p>No mood entries yet.</p>}
-        <ul>
-          {moods.map((m) => (
-            <li key={m.id} style={{ marginBottom: 12 }}>
-              <strong>{m.mood}</strong> — energy {m.energy ?? '—'}
-              <div>{m.note}</div>
-              <small>{new Date(m.createdAt).toLocaleString()}</small>
-            </li>
-          ))}
-        </ul>
+      <section style={{ marginTop: 20 }}>
+        <div className="glass-panel">
+          <h1 className="header-title">Mood Tracker</h1>
+          <p className="header-sub">Quick mood entry and recent timeline.</p>
+
+          <form onSubmit={create} style={{ marginBottom: 24 }}>
+            <input placeholder="Mood (e.g. happy, sad)" value={mood} onChange={(e) => setMood(e.target.value)} style={{ display: 'block', width: '100%', marginBottom: 8 }} />
+            <label style={{ display: 'block', marginBottom: 8 }}>
+              Energy: <input type="range" min={0} max={10} value={energy} onChange={(e) => setEnergy(Number(e.target.value))} /> {energy}
+            </label>
+            <textarea placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} rows={3} style={{ width: '100%', marginTop: 8 }} />
+            <div style={{ marginTop: 8 }}>
+              <button className="button" type="submit">Record Mood</button>
+            </div>
+          </form>
+
+          <section>
+            <h2 className="header-title">Recent moods</h2>
+            {moods.length === 0 && <p>No mood entries yet.</p>}
+            <ul>
+              {moods.map((m) => (
+                <li key={m.id} style={{ marginBottom: 12 }}>
+                  <strong>{m.mood}</strong> — energy {m.energy ?? '—'}
+                  <div>{m.note}</div>
+                  <small className="muted">{new Date(m.createdAt).toLocaleString()}</small>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </section>
     </main>
   );
