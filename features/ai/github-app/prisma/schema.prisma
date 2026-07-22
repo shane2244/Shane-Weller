@@ -17,6 +17,8 @@ model User {
   journals  JournalEntry[]
   moods     MoodEntry[]
   convos    Conversation[]
+  aiUsages  AiUsage[]
+  apiLogs   ApiLog[]
 }
 
 model JournalEntry {
@@ -46,6 +48,7 @@ model Conversation {
   user      User      @relation(fields: [userId], references: [id])
   userId    String
   title     String?
+  summary   String?
   messages  Message[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -58,4 +61,27 @@ model Message {
   role           String
   content        String
   createdAt      DateTime     @default(now())
+}
+
+model AiUsage {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  model      String
+  promptTokens Int?
+  completionTokens Int?
+  totalTokens Int?
+  costEstimate Float?    // optional, for later
+  createdAt  DateTime @default(now())
+}
+
+model ApiLog {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  path      String
+  method    String
+  status    Int
+  note      String?
+  createdAt DateTime @default(now())
 }
